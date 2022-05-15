@@ -1,25 +1,51 @@
-import logo from './logo.svg';
-import './App.css';
+import { useInfiniteQuery, useQuery, useQueryClient } from "react-query"
+
+import React from "react"
+import { ReactQueryDevtools } from "react-query/devtools"
+import request from "./request"
+
+function fetchUsers({ pageParam = 1 }) {
+  return request.get("/users", {
+    params: {
+      pageNumber: pageParam,
+    },
+  })
+}
+function Users() {
+  const { data, hasNextPage, fetchNextPage } = useInfiniteQuery("users", fetchUsers, {
+    getNextPageParam: ({ pageNumber, hasMore }) => {
+      //无限加载的时候 并没有总页数
+      return hasMore && pageNumber + 1
+      //return pageNumber < totalNumber ? pageNumber + 1 : false;
+    },
+  })
+  return (
+    <>
+      <ul>
+        {data?.pages?.map((page, index) => {
+          return (
+            <React.Fragment key={index}>
+              {page?.data?.map((user) => (
+                <li key={user.id}>{user.name}</li>
+              ))}
+            </React.Fragment>
+          )
+        })}
+      </ul>
+      <button disabled={!hasNextPage} onClick={fetchNextPage}>
+        加载更多
+      </button>
+    </>
+  )
+}
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <>
+      <Users />
+      <ReactQueryDevtools initialIsOpen={true} />
+    </>
+  )
 }
-
-export default App;
+//Cannot read properties of undefined (reading 'map')
+export default App

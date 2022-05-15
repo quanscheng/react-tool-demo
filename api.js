@@ -16,24 +16,25 @@ app.use((req, res, next) => {
 const users = new Array(30)
   .fill(true)
   .map((item, index) => ({ id: String(index + 1), name: `name${index + 1}` }))
-const posts = new Array(30)
-  .fill(true)
-  .map((item, index) => ({
-    id: String(index + 1),
-    title: `title${index + 1}`,
-    userId: String(index + 1),
-  }))
+
+const posts = new Array(30).fill(true).map((item, index) => ({
+  id: String(index + 1),
+  title: `title${index + 1}`,
+  userId: String(index + 1),
+}))
 
 app.get("/users", (req, res) => {
   const pageNumber = Number(req.query.pageNumber)
+  console.log('req*********************************************: ', req);
   const totalNumber = Math.floor(users.length / 10)
   const offset = (pageNumber - 1) * 10
   const hasMore = pageNumber < totalNumber
-  res.json({
+  const data = users.slice(offset, offset + 10)
+  res.send({
     pageNumber,
     totalNumber,
     hasMore,
-    data: users.slice(offset, offset + 10),
+    data,
   })
 })
 app.post("/users", (req, res) => {
