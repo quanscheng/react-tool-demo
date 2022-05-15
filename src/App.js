@@ -1,6 +1,6 @@
 import "./App.css"
 
-import styles from "./demo.module.css"
+import styles from "./demo.module.scss"
 
 function App() {
   return (
